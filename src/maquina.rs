@@ -61,3 +61,9 @@ pub struct Maquina {
     pub fita: String,
     pub pos: u32,
 }
+
+impl fmt::Display for Maquina {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Olá da máquina")
+    }
+}
