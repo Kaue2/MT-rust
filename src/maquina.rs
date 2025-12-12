@@ -20,11 +20,23 @@ impl fmt::Display for Direcao {
 
 #[derive(Debug)]
 pub struct Transicao {
-    estado_atual: String,
-    char_leitura: char,
-    estado_destino: String,
-    char_escrita: char,
-    direcao: Direcao,
+    pub estado_atual: String,
+    pub char_leitura: char,
+    pub estado_destino: String,
+    pub char_escrita: char,
+    pub direcao: Direcao,
+}
+
+impl Transicao {
+    pub fn new(ea: String, cl: char, ed: String, ce: char, dir: Direcao) -> Self {
+        Transicao {
+            estado_atual: ea,
+            char_leitura: cl,
+            estado_destino: ed,
+            char_escrita: ce,
+            direcao: dir,
+        }
+    }
 }
 
 impl fmt::Display for Transicao {
@@ -111,15 +123,18 @@ impl Maquina {
                         if self.pos > 0 {
                             self.pos -= 1;
                         } else {
-                            println!(
-                                "transição inválida encontrada, não é possível ir para esquerda."
-                            );
+                            panic!("Erro: não é possível ir para esquerda, limite atingido.")
                         }
                     }
                 }
+
+                println!("{}", self); // self é uma instância de máquina
             }
             None => {
-                println!("Transição ({}, {}) não encontrada", key.0, key.1)
+                panic!(
+                    "Erro: nenhuma transição encontrada para: ({}, {})",
+                    key.0, key.1
+                )
             }
         }
     }
