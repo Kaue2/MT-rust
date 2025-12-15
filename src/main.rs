@@ -1,5 +1,5 @@
-mod maquina;
 mod leitor;
+mod maquina;
 
 use maquina::{Direcao, Maquina, Transicao};
 
@@ -14,4 +14,14 @@ fn main() {
     maquina::get_transition(&msg);
 
     m1.passo_simulacao();
+
+    let result = leitor::pegar_fita("assets/maquina.txt");
+    match result {
+        Ok(_) => {
+            println!("Tudo certo")
+        }
+        Err(err) => {
+            println!("Erro: {}", err)
+        }
+    }
 }
