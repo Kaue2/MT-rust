@@ -20,20 +20,26 @@ impl fmt::Display for Direcao {
 
 #[derive(Debug)]
 pub struct Transicao {
-    pub estado_atual: String,
+    pub estado_atual: usize,
     pub char_leitura: char,
-    pub estado_destino: String,
+    pub estado_destino: usize,
     pub char_escrita: char,
     pub direcao: Direcao,
 }
 
 impl Transicao {
-    pub fn new(ea: String, cl: char, ed: String, ce: char, dir: Direcao) -> Self {
+    pub fn new(
+        estado_atual: usize,
+        char_leitura: char,
+        estado_destino: usize,
+        char_escrita: char,
+        dir: Direcao,
+    ) -> Self {
         Transicao {
-            estado_atual: ea,
-            char_leitura: cl,
-            estado_destino: ed,
-            char_escrita: ce,
+            estado_atual: estado_atual,
+            char_leitura: char_leitura,
+            estado_destino: estado_destino,
+            char_escrita: char_escrita,
             direcao: dir,
         }
     }
@@ -53,32 +59,13 @@ impl fmt::Display for Transicao {
     }
 }
 
-pub fn get_transition(entrada: &str) {
-    let palavras: Vec<&str> = entrada.split_whitespace().collect();
-
-    let direcao = match palavras[4] {
-        "E" => Direcao::E,
-        "D" => Direcao::D,
-        _ => panic!("Direção desconhecida {}", palavras[4]),
-    };
-
-    let t = Transicao {
-        estado_atual: palavras[0].to_string(),
-        char_leitura: palavras[1].parse().expect("Símbolo de leitura inválido"),
-        estado_destino: palavras[2].to_string(),
-        char_escrita: palavras[3].parse().expect("Símbolo de escrita inválido"),
-        direcao: direcao,
-    };
-
-    println!("{}", t);
-}
-
 #[derive(Debug)]
 pub struct Maquina {
     pub fita: Vec<char>,
     pub pos: usize,
-    pub estado_atual: String,
-    pub transicoes: HashMap<(String, char), Transicao>,
+    pub estado_atual: usize,
+    pub transicoes: HashMap<(usize, char), Transicao>,
+    pub qtd_estados: usize,
 }
 
 impl fmt::Display for Maquina {
@@ -102,19 +89,19 @@ impl Maquina {
         Maquina {
             fita: fita.chars().collect(),
             pos: 0,
-            estado_atual: String::from("q0"),
+            estado_atual: 0,
             transicoes: HashMap::new(),
         }
     }
 
     pub fn passo_simulacao(&mut self) {
         let simbolo: char = self.fita[self.pos];
-        let key: (String, char) = (self.estado_atual.clone(), simbolo);
+        let key: (usize, char) = (self.estado_atual, simbolo);
 
         match self.transicoes.get(&key) {
             Some(transicao) => {
                 println!("Transição encontrada com sucesso: {}", transicao);
-                self.estado_atual = transicao.estado_destino.clone();
+                self.estado_atual = transicao.estado_destino;
                 self.fita[self.pos] = transicao.char_escrita.clone();
 
                 match transicao.direcao {
