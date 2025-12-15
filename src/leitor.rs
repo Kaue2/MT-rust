@@ -5,27 +5,50 @@ use std::io::prelude::*;
 
 use crate::maquina::{Direcao, Maquina, Transicao};
 
-fn pegar_estados(path: &str) {}
-fn pegar_q_aceita(path: &str) {}
-fn pegar_transicoes(path: &str) {}
+fn pegar_estados() {}
 
-pub fn pegar_fita(path: &str) -> std::io::Result<()> {
+fn pegar_q_aceita() {}
+
+fn pegar_transicoes() {}
+
+fn pegar_fita() {}
+
+fn pegar_resultado() {}
+
+pub fn montar_maquina(path: &str) -> std::io::Result<()> {
     let f = File::open(path)?;
     let mut reader = BufReader::new(f);
     let mut buffer = String::new();
 
-    // tenta ler o buf
-    // leu? ok
-    // tem alguma coisa? então continua no loop
-    while reader.read_line(&mut buffer)? > 0 {
-        println!("conteúdo encontrado {}", buffer);
-
+    loop {
         buffer.clear();
+        let bytes_lidos = reader.read_line(&mut buffer)?;
+        if bytes_lidos == 0 {
+            break;
+        }
+
+        let linha = buffer.trim();
+        if linha.is_empty() {
+            continue;
+        }
+
+        match linha {
+            "estados:" => {
+                pegar_estados();
+            }
+            "q_aceita:" => {
+                pegar_q_aceita();
+            }
+            "transicoes:" => {
+                pegar_transicoes();
+            }
+            "fita_inicial:" => pegar_fita(),
+            "esperado:" => {
+                pegar_resultado();
+            }
+            _ => {}
+        }
     }
 
     Ok(())
 }
-
-fn pegar_resultado(path: &str) {}
-
-pub fn montar_maquina(path: &str) {}
