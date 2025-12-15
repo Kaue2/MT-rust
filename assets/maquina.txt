@@ -1,0 +1,14 @@
+estados:
+q0
+
+q_aceita:
+q0
+
+transicoes:
+q0 a q0 b D
+
+fita_inicial:
+aaaaaa
+
+esperado:
+bbbbbb

@@ -1,4 +1,5 @@
 mod maquina;
+mod leitor;
 
 use maquina::{Direcao, Maquina, Transicao};
 
