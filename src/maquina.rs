@@ -129,4 +129,6 @@ impl Maquina {
             }
         }
     }
+
+    pub fn simular_maquina(&mut self) {}
 }
