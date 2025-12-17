@@ -68,6 +68,7 @@ pub struct Maquina {
     pub qtd_estados: usize,
     pub mapa_nomes: HashMap<String, usize>,
     pub estados_finais: Vec<bool>,
+    pub resultado: Vec<char>,
 }
 
 impl fmt::Display for Maquina {
@@ -96,6 +97,7 @@ impl Maquina {
             qtd_estados: 0,
             mapa_nomes: HashMap::new(),
             estados_finais: Vec::new(),
+            resultado: Vec::new(),
         }
     }
 

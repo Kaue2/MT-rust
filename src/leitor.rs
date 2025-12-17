@@ -1,14 +1,15 @@
 use std::collections::HashMap;
+use std::fmt::Formatter;
 use std::fs::File;
 use std::io;
-use std::io::prelude::*;
 use std::io::BufReader;
+use std::io::prelude::*;
 
 use crate::maquina::{Direcao, Maquina, Transicao};
 
 fn get_estados(reader: &mut BufReader<File>) -> io::Result<Vec<String>> {
     let mut buffer = String::new();
-    let mut estados = Vec::new();
+    let mut estados: Vec<String> = Vec::new();
 
     loop {
         buffer.clear();
@@ -48,7 +49,7 @@ fn atribuir_estados(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io::
 
 fn get_estados_finais(reader: &mut BufReader<File>) -> io::Result<Vec<String>> {
     let mut buffer = String::new();
-    let mut estados = Vec::new();
+    let mut estados: Vec<String> = Vec::new();
 
     loop {
         buffer.clear();
@@ -96,7 +97,78 @@ fn atribuir_q_aceita(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io:
     Ok(())
 }
 
-fn atribuir_transicoes() {}
+fn get_transicoes(
+    maquina: &mut Maquina,
+    reader: &mut BufReader<File>,
+) -> io::Result<Vec<Transicao>> {
+    let mut buffer = String::new();
+    let mut transicoes: Vec<Transicao> = Vec::new();
+
+    loop {
+        buffer.clear();
+        let bytes_lidos = reader.read_line(&mut buffer)?;
+        if bytes_lidos == 0 {
+            break;
+        }
+
+        if buffer.clone().trim().is_empty() {
+            break;
+        }
+
+        let partes: Vec<&str> = buffer.split_whitespace().collect();
+
+        let dir = match partes[4] {
+            "E" => Direcao::E,
+            "D" => Direcao::D,
+            _ => panic!("Direção desconhecida: {}", partes[4]),
+        };
+
+        let estado_atual = match maquina.mapa_nomes.get(partes[0]) {
+            Some(&valor) => valor,
+            None => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Erro: não foi possível encontrar o estado atual no mapa de nomes",
+                ));
+            }
+        };
+
+        let estado_destino = match maquina.mapa_nomes.get(partes[2]) {
+            Some(&valor) => valor,
+            None => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Erro: não foi possível encontrar o estado de destino no mapa de nomes",
+                ));
+            }
+        };
+
+        transicoes.push(Transicao {
+            estado_atual: estado_atual,
+            char_leitura: partes[1]
+                .parse()
+                .expect("Erro: não foi possível colocar char leitura"),
+            estado_destino: estado_destino,
+            char_escrita: partes[3]
+                .parse()
+                .expect("Erro: não foi possível colocar char escrita"),
+            direcao: dir,
+        });
+    }
+
+    Ok(transicoes)
+}
+
+fn atribuir_transicoes(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io::Result<()> {
+    let transicoes: Vec<Transicao> = get_transicoes(maquina, reader)?;
+
+    for transicao in transicoes {
+        let key = (transicao.estado_atual, transicao.char_leitura);
+        maquina.transicoes.insert(key, transicao);
+    }
+
+    Ok(())
+}
 
 fn atribuir_fita() {}
 
@@ -128,7 +200,7 @@ pub fn montar_maquina(path: &str) -> std::io::Result<()> {
                 atribuir_q_aceita(&mut maquina, &mut reader)?;
             }
             "transicoes:" => {
-                atribuir_transicoes();
+                atribuir_transicoes(&mut maquina, &mut reader)?;
             }
             "fita_inicial:" => {
                 atribuir_fita();
@@ -136,7 +208,13 @@ pub fn montar_maquina(path: &str) -> std::io::Result<()> {
             "esperado:" => {
                 atribuir_resultado();
             }
-            _ => {}
+            _ => {
+                println!("linha encontrada: {}", linha);
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    format!("O arquivo lido não respeita o formato necessesário"),
+                ));
+            }
         }
     }
 
