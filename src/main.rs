@@ -4,14 +4,18 @@ mod maquina;
 use maquina::{Direcao, Maquina, Transicao};
 
 fn main() {
-    let result = leitor::montar_maquina("assets/maquina.txt");
-
-    match result {
-        Ok(_) => {
-            println!("Tudo certo")
+    let mt1: Maquina = match leitor::montar_maquina("assets/maquina.txt") {
+        Ok(mt) => {
+            println!("Sucesso ao criar a máquina\n\n");
+            mt
         }
         Err(err) => {
-            println!("Erro: {}", err)
+            eprintln!("Não foi possível criar a máquina");
+            eprintln!("Erro: {}", err);
+
+            return;
         }
-    }
+    };
+
+    println!("Máquina encontrada: \n\n{}", mt1);
 }

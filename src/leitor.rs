@@ -206,7 +206,7 @@ fn atribuir_resultado(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io
     Ok(())
 }
 
-pub fn montar_maquina(path: &str) -> std::io::Result<()> {
+pub fn montar_maquina(path: &str) -> std::io::Result<Maquina> {
     let mut maquina = Maquina::new("");
     let f = File::open(path)?;
     let mut reader = BufReader::new(f);
@@ -250,5 +250,5 @@ pub fn montar_maquina(path: &str) -> std::io::Result<()> {
         }
     }
 
-    Ok(())
+    Ok(maquina)
 }

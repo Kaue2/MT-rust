@@ -73,17 +73,14 @@ pub struct Maquina {
 
 impl fmt::Display for Maquina {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Posição atual: {}\nFita: \n\n", self.pos);
+        let fita_str: String = self.fita.iter().collect();
+        let res_str: String = self.resultado.iter().collect();
 
-        for char in &self.fita {
-            // Equivalente a colocar '?' depois da função
-            match write!(f, "{}", char) {
-                Ok(_) => {}
-                Err(e) => return Err(e),
-            }
-        }
-
-        Ok(())
+        write!(
+            f,
+            "Posição atual: {}\nFita: {}\nResultado esperado: {}\nEstado atual: {}\n\n",
+            self.pos, fita_str, res_str, self.estado_atual
+        )
     }
 }
 
