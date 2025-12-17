@@ -170,9 +170,41 @@ fn atribuir_transicoes(maquina: &mut Maquina, reader: &mut BufReader<File>) -> i
     Ok(())
 }
 
-fn atribuir_fita() {}
+fn get_fita(reader: &mut BufReader<File>) -> io::Result<String> {
+    let mut buffer = String::new();
+    let mut fita = String::new();
 
-fn atribuir_resultado() {}
+    loop {
+        buffer.clear();
+        let bytes_lidos = reader.read_line(&mut buffer)?;
+        if bytes_lidos == 0 {
+            break;
+        }
+
+        let linha = buffer.trim();
+        if linha.is_empty() {
+            break;
+        }
+
+        fita = fita + linha;
+    }
+
+    Ok(fita)
+}
+
+fn atribuir_fita(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io::Result<()> {
+    let fita = get_fita(reader)?;
+    maquina.fita = fita.chars().collect();
+
+    Ok(())
+}
+
+fn atribuir_resultado(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io::Result<()> {
+    let resultado = get_fita(reader)?;
+    maquina.resultado = resultado.chars().collect();
+
+    Ok(())
+}
 
 pub fn montar_maquina(path: &str) -> std::io::Result<()> {
     let mut maquina = Maquina::new("");
@@ -203,10 +235,10 @@ pub fn montar_maquina(path: &str) -> std::io::Result<()> {
                 atribuir_transicoes(&mut maquina, &mut reader)?;
             }
             "fita_inicial:" => {
-                atribuir_fita();
+                atribuir_fita(&mut maquina, &mut reader)?;
             }
             "esperado:" => {
-                atribuir_resultado();
+                atribuir_resultado(&mut maquina, &mut reader)?;
             }
             _ => {
                 println!("linha encontrada: {}", linha);
