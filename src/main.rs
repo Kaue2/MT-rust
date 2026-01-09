@@ -18,5 +18,5 @@ fn main() {
     };
 
     println!("Máquina encontrada: \n\n{}", mt1);
-    mt1.passo_simulacao();
+    mt1.simular_maquina();
 }

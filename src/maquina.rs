@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::fmt;
 
+struct TransicaoErro;
+
 #[derive(Debug)]
 pub enum Direcao {
     E,
@@ -98,7 +100,7 @@ impl Maquina {
         }
     }
 
-    pub fn passo_simulacao(&mut self) {
+    pub fn passo_simulacao(&mut self) -> Result<bool, TransicaoErro> {
         let simbolo: char = self.fita[self.pos];
         let key: (usize, char) = (self.estado_atual, simbolo);
 
@@ -114,21 +116,53 @@ impl Maquina {
                         if self.pos > 0 {
                             self.pos -= 1;
                         } else {
-                            panic!("Erro: não é possível ir para esquerda, limite atingido.")
+                            eprintln!("Erro: não é possível ir para esquerda, limite atingido.");
+                            return Err(TransicaoErro);
                         }
                     }
                 }
 
                 println!("{}", self); // self é uma instância de máquina
+                return Ok(false);
             }
             None => {
-                panic!(
-                    "Erro: nenhuma transição encontrada para: ({}, {})",
+                eprintln!(
+                    "Aviso: encerrando máquina nenhuma transição encontrada para: ({}, {})",
                     key.0, key.1
-                )
+                );
+                return Ok(true);
             }
         }
     }
 
-    pub fn simular_maquina(&mut self) {}
+    // adicionar mapa reverso e terminar a função de simulação de forma mais simples
+    // retonar o status da simulação
+
+    /* *
+     * Quando estamos simulando máquinas de turing precisamos garantir que a máquina
+     * Encerre, para isso essa implementação considera que as máquinas possuem uma fita
+     * Infinita, e para isso vamos adicionar nossos caracteres em branco após a fita
+     * Inicial ser lida, você deve considerar isso ao implementar sua máquina
+     */
+    pub fn simular_maquina(&mut self) -> Result<bool, ()> {
+        loop {
+            match self.passo_simulacao() {
+                Ok(true) => {
+                    if self.estados_finais[self.estado_atual] == true {
+                        println!(
+                            "Simulação encerrada! \nDecisão da máquina: aceito \n{}",
+                            self
+                        );
+                        return Ok(true);
+                    }
+                }
+                Ok(false) => {
+                    continue;
+                }
+                Err(TransicaoErro) => {
+                    return Err(());
+                }
+            }
+        }
+    }
 }

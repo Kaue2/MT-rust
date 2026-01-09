@@ -193,7 +193,8 @@ fn get_fita(reader: &mut BufReader<File>) -> io::Result<String> {
 }
 
 fn atribuir_fita(maquina: &mut Maquina, reader: &mut BufReader<File>) -> io::Result<()> {
-    let fita = get_fita(reader)?;
+    let mut fita = get_fita(reader)?;
+    fita.push('|');
     maquina.fita = fita.chars().collect();
 
     Ok(())
