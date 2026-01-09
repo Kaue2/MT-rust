@@ -136,6 +136,10 @@ impl Maquina {
         }
     }
 
+    /* *
+     * função para simular uma máquina
+     * retorna sucesso se a máquina parar
+     */
     pub fn simular_maquina(&mut self) -> Result<bool, MaquinaErro> {
         loop {
             match self.passo_simulacao() {
