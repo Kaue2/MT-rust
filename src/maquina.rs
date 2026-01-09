@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fmt;
 
 struct TransicaoErro;
+pub struct MaquinaErro;
 
 #[derive(Debug)]
 pub enum Direcao {
@@ -100,7 +101,7 @@ impl Maquina {
         }
     }
 
-    pub fn passo_simulacao(&mut self) -> Result<bool, TransicaoErro> {
+    fn passo_simulacao(&mut self) -> Result<bool, TransicaoErro> {
         let simbolo: char = self.fita[self.pos];
         let key: (usize, char) = (self.estado_atual, simbolo);
 
@@ -135,16 +136,7 @@ impl Maquina {
         }
     }
 
-    // adicionar mapa reverso e terminar a função de simulação de forma mais simples
-    // retonar o status da simulação
-
-    /* *
-     * Quando estamos simulando máquinas de turing precisamos garantir que a máquina
-     * Encerre, para isso essa implementação considera que as máquinas possuem uma fita
-     * Infinita, e para isso vamos adicionar nossos caracteres em branco após a fita
-     * Inicial ser lida, você deve considerar isso ao implementar sua máquina
-     */
-    pub fn simular_maquina(&mut self) -> Result<bool, ()> {
+    pub fn simular_maquina(&mut self) -> Result<bool, MaquinaErro> {
         loop {
             match self.passo_simulacao() {
                 Ok(true) => {
@@ -154,13 +146,18 @@ impl Maquina {
                             self
                         );
                         return Ok(true);
+                    } else {
+                        println!(
+                            "Simulação encerrada! \nDecisão da máquina: rejeito \n{}",
+                            self
+                        )
                     }
                 }
                 Ok(false) => {
                     continue;
                 }
                 Err(TransicaoErro) => {
-                    return Err(());
+                    return Err(MaquinaErro);
                 }
             }
         }

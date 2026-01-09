@@ -1,9 +1,12 @@
 mod leitor;
 mod maquina;
 
-use maquina::{Direcao, Maquina, Transicao};
+use maquina::{Maquina, MaquinaErro};
 
-fn main() {
+#[derive(Debug)]
+struct ProgramaErro;
+
+fn main() -> Result<(), ProgramaErro> {
     let mut mt1: Maquina = match leitor::montar_maquina("assets/maquina.txt") {
         Ok(mt) => {
             println!("Sucesso ao criar a máquina\n\n");
@@ -13,10 +16,20 @@ fn main() {
             eprintln!("Não foi possível criar a máquina");
             eprintln!("Erro: {}", err);
 
-            return;
+            return Err(ProgramaErro);
         }
     };
 
     println!("Máquina encontrada: \n\n{}", mt1);
-    mt1.simular_maquina();
+    let result = match mt1.simular_maquina() {
+        Ok(true) => true,
+        Ok(false) => true,
+        Err(MaquinaErro) => false,
+    };
+
+    if result != true {
+        return Err(ProgramaErro);
+    }
+
+    Ok(())
 }
